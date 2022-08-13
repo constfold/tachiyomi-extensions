@@ -40,30 +40,11 @@ if (System.getenv("CI") == null || System.getenv("CI_MODULE_GEN") == "true") {
 } else {
     // Running in CI (GitHub Actions)
 
-    val isMultisrc = System.getenv("CI_MULTISRC") == "true"
-    val chunkSize = System.getenv("CI_CHUNK_SIZE").toInt()
-    val chunk = System.getenv("CI_CHUNK_NUM").toInt()
-
-    if (isMultisrc) {
-        include(":multisrc")
-        project(":multisrc").projectDir = File("multisrc")
-
-        // Loads generated extensions from multisrc
-        File(rootDir, "generated-src").getChunk(chunk, chunkSize)?.forEach {
-            val name = ":extensions:multisrc:${it.parentFile.name}:${it.name}"
-            println(name)
-            include(name)
-            project(name).projectDir = File("generated-src/${it.parentFile.name}/${it.name}")
-        }
-    } else {
-        // Loads individual extensions
-        File(rootDir, "src").getChunk(chunk, chunkSize)?.forEach {
-            val name = ":extensions:individual:${it.parentFile.name}:${it.name}"
-            println(name)
-            include(name)
-            project(name).projectDir = File("src/${it.parentFile.name}/${it.name}")
-        }
-    }
+    val lang = "zh"
+    val name = "copymangas"
+    val projectName = ":extensions:individual:$lang:$name"
+    include(projectName)
+    project(projectName).projectDir = File("src/${lang}/${name}")
 }
 
 fun File.getChunk(chunk: Int, chunkSize: Int): List<File>? {
